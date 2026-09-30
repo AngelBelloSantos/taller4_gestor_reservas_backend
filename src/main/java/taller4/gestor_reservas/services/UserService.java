@@ -36,6 +36,13 @@ public class UserService {
 		}
 		return newUser(user);
 	}
+	public Optional<User> updatePassword(Long id, User user) {
+		if (users.existsById(id)) {
+			User userUpdated = getUserById(id).get();
+			userUpdated.setPassword(user.getPassword());
+		}
+		return Optional.empty();
+	}
 	
 	public void deleteUserById(Long id) {
 		users.deleteById(id);

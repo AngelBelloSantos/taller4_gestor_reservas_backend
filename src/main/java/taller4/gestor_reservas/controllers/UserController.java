@@ -40,6 +40,10 @@ public class UserController {
 	public User putUser(@PathVariable Long id, @RequestBody User user) {
 		return users.updateUser(id, user);
 	}
+	@PutMapping("/password/{id}")
+	public Optional<User> putUserPassword(@PathVariable Long id, @RequestBody User user) {
+		return users.updatePassword(id, user);
+	}
 	
 	@DeleteMapping("/{id}")
 	public void deleteUser(@PathVariable Long id) {
