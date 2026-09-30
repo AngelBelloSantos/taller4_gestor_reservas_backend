@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import taller4.gestor_reservas.models.Resource;
+import taller4.gestor_reservas.models.ResourceStatus;
 import taller4.gestor_reservas.models.ResourceType;
 import taller4.gestor_reservas.repositories.ResourceRepository;
 import taller4.gestor_reservas.repositories.ResourceTypeRepository;
@@ -40,13 +41,13 @@ public class ResourceService {
 		return rsrcType.get();
 	}
 	
-	public ResourceType updateType(Long id, ResourceType rsrc) {
-		if (rsrcTypes.existsById(id) && getRsrcByName(rsrc.getName()).isEmpty()) {
+	public ResourceType updateType(Long id, ResourceType rsrcType) {
+		if (rsrcTypes.existsById(id) && getRsrcByName(rsrcType.getName()).isEmpty()) {
 			ResourceType rsrcUpdated = rsrcTypes.findById(id).get();
-			rsrcUpdated.setName(rsrc.getName());
+			rsrcUpdated.setName(rsrcType.getName());
 			rsrcTypes.save(rsrcUpdated);
 		}
-		return newType(rsrc);
+		return newType(rsrcType);
 	}
 	
 	/*
@@ -67,7 +68,13 @@ public class ResourceService {
 	}
 	
 	public Resource newResource(Resource resource) {
-		return resources.save(resource);
+		Resource newResource = new Resource();
+		newResource.setName(resource.getName());
+		newResource.setDetail(resource.getDetail());
+		newResource.setSharedCapacity(resource.getSharedCapacity());
+		newResource.setResourceType(newType(resource.getResourceType()));
+		newResource.setStatus(ResourceStatus.OUT_OF_SERVICE);
+		return resources.save(newResource);
 	}
 	
 	public Resource upateResource(Long id, Resource resource) {

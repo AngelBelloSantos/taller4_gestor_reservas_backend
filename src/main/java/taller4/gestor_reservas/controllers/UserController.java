@@ -44,6 +44,10 @@ public class UserController {
 	public Optional<User> putUserPassword(@PathVariable Long id, @RequestBody User user) {
 		return users.updatePassword(id, user);
 	}
+	@PutMapping("/roles/{id}")
+	public Optional<User> putUserRole(@PathVariable Long id, @RequestBody User user) {
+		return users.setUserRole(id, user);
+	}
 	
 	@DeleteMapping("/{id}")
 	public void deleteUser(@PathVariable Long id) {

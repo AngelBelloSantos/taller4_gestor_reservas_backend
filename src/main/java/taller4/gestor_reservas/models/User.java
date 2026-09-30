@@ -25,6 +25,7 @@ public class User {
 	private String password;
 	private String name;
 	private String identificationNumber;
+	private String email;
 	private String phoneNumber;
 	@Embedded
 	private Address address;

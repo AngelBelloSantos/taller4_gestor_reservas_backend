@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import taller4.gestor_reservas.models.User;
+import taller4.gestor_reservas.models.UserRole;
 import taller4.gestor_reservas.repositories.UserRepository;
 
 @Service
@@ -22,7 +23,15 @@ public class UserService {
 	}
 	
 	public User newUser(User user) {
-		return users.save(user);
+		User newUser = new User();
+		newUser.setName(user.getName());
+		newUser.setIdentificationNumber(user.getIdentificationNumber());
+		newUser.setPassword(user.getPassword());
+		newUser.setRole(UserRole.STANDARD_USER);
+		newUser.setEmail(user.getEmail());
+		newUser.setPhoneNumber(user.getPhoneNumber());
+		newUser.setAddress(user.getAddress());
+		return users.save(newUser);
 	}
 	
 	public User updateUser(Long id, User user) {
@@ -40,6 +49,19 @@ public class UserService {
 		if (users.existsById(id)) {
 			User userUpdated = getUserById(id).get();
 			userUpdated.setPassword(user.getPassword());
+			users.save(userUpdated);
+		}
+		return Optional.empty();
+	}
+	public Optional<User> setUserRole(Long id, User user) {
+		boolean validRole = false;
+		for (UserRole role : UserRole.values()) {
+			if (role.compareTo(user.getRole()) == 0) validRole = true;
+		}
+		if (users.existsById(id) && validRole) {
+			User userUpdated = users.findById(id).get();
+			userUpdated.setRole(user.getRole());
+			return Optional.of(users.save(userUpdated));
 		}
 		return Optional.empty();
 	}

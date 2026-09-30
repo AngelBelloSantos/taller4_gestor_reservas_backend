@@ -29,8 +29,8 @@ public class ResourceController {
 		return resources.getAllResources();
 	}
 	@GetMapping("/by")
-	public List<Resource> getAll(@RequestParam String cat) {
-		return resources.getResourceByType(cat);
+	public List<Resource> getAll(@RequestParam String category) {
+		return resources.getResourceByType(category);
 	}
 	
 	@PostMapping
