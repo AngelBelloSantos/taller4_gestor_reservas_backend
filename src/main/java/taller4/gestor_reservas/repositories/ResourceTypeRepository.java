@@ -10,5 +10,6 @@ import taller4.gestor_reservas.models.ResourceType;
 @Repository
 public interface ResourceTypeRepository extends JpaRepository<ResourceType, Long> {
 
+	public boolean existsByName(String name);
 	public List<ResourceType> findByName(String Name);
 }

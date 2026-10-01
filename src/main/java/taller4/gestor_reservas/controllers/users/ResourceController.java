@@ -1,17 +1,15 @@
-package taller4.gestor_reservas.controllers;
+package taller4.gestor_reservas.controllers.users;
 
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import taller4.gestor_reservas.models.Resource;
+import taller4.gestor_reservas.models.ResourceStatus;
 import taller4.gestor_reservas.models.ResourceType;
 import taller4.gestor_reservas.services.ResourceService;
 
@@ -25,29 +23,19 @@ public class ResourceController {
 	 * RESOURCES API
 	 */
 	@GetMapping
-	public List<Resource> getAll() {
-		return resources.getAllResources();
+	public List<Resource> getAllOperationals() {
+		return resources.getResourcesByStatus(ResourceStatus.OPERATIONAL);
 	}
-	@GetMapping("/by")
-	public List<Resource> getAll(@RequestParam String category) {
-		return resources.getResourceByType(category);
-	}
-	
-	@PostMapping
-	public Resource postResource(@RequestBody Resource rsrc) {
-		return resources.newResource(rsrc);
+	@GetMapping("/filter")
+	public List<Resource> getAll(@RequestParam Long typeId) {
+		return resources.getResourcesByStatusAndType(ResourceStatus.OPERATIONAL, typeId);
 	}
 	
 	/*
 	 * RESOURCE'S TYPES API
 	 */
-	@GetMapping("categories")
+	@GetMapping("/categories")
 	public List<ResourceType> getAllCategories() {
 		return resources.getAllTypes();
-	}
-	
-	@PutMapping("/edit")
-	public ResourceType putResourceType(@RequestParam Long id, @RequestBody ResourceType rsrcType) {
-		return resources.updateType(id, rsrcType);
 	}
 }

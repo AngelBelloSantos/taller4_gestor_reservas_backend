@@ -25,29 +25,26 @@ public class ResourceService {
 	public List<ResourceType> getAllTypes() {
 		return rsrcTypes.findAll();
 	}
-	public Optional<ResourceType> getRsrcById(Long id) {
+	public Optional<ResourceType> getTypeById(Long id) {
 		return rsrcTypes.findById(id);
 	}
-	public Optional<ResourceType> getRsrcByName(String name) {
-		List<ResourceType> types = rsrcTypes.findByName(name);
-		return types.isEmpty() ? Optional.empty() : Optional.of(types.getFirst());
+	
+	public ResourceType newType(ResourceType type) {
+		if (rsrcTypes.existsByName(type.getName())) {
+			return rsrcTypes.findByName(type.getName()).getFirst();
+		}
+		ResourceType newType = new ResourceType();
+		newType.setName(type.getName());
+		return rsrcTypes.save(newType);
 	}
 	
-	public ResourceType newType(ResourceType rsrc) {
-		Optional<ResourceType> rsrcType = getRsrcByName(rsrc.getName());
-		if (rsrcType.isEmpty()) {
-			return rsrcTypes.save(rsrc);
+	public ResourceType updateType(Long id, ResourceType type) {
+		if (rsrcTypes.existsById(id) && !rsrcTypes.existsByName(type.getName())) {
+			ResourceType typeUpdated = rsrcTypes.findById(id).get();
+			typeUpdated.setName(type.getName());
+			rsrcTypes.save(typeUpdated);
 		}
-		return rsrcType.get();
-	}
-	
-	public ResourceType updateType(Long id, ResourceType rsrcType) {
-		if (rsrcTypes.existsById(id) && getRsrcByName(rsrcType.getName()).isEmpty()) {
-			ResourceType rsrcUpdated = rsrcTypes.findById(id).get();
-			rsrcUpdated.setName(rsrcType.getName());
-			rsrcTypes.save(rsrcUpdated);
-		}
-		return newType(rsrcType);
+		return newType(type);
 	}
 	
 	/*
@@ -59,12 +56,21 @@ public class ResourceService {
 	public Optional<Resource> getResourceById(Long id) {
 		return resources.findById(id);
 	}
-	public List<Resource> getResourceByType(String catName) {
-		List<ResourceType> rsrcType = rsrcTypes.findByName(catName);
-		if (rsrcType.isEmpty()) {
-			return new LinkedList<Resource>();
+	public List<Resource> getResourcesByType(Long typeId) {
+		if (rsrcTypes.existsById(typeId)) {
+			return resources.findByResourceType(rsrcTypes.findById(typeId).get());
 		}
-		return resources.findByResourceType(rsrcType.getFirst());
+		return new LinkedList<Resource>();
+	}
+	public List<Resource> getResourcesByStatus(ResourceStatus status) {
+		return resources.findByStatus(status);
+	}
+	
+	public List<Resource> getResourcesByStatusAndType(ResourceStatus status, Long typeId) {
+		if (rsrcTypes.existsById(typeId)) {
+			return resources.findByStatusAndResourceType(status, rsrcTypes.findById(typeId).get());
+		}
+		return new LinkedList<Resource>();
 	}
 	
 	public Resource newResource(Resource resource) {
@@ -83,10 +89,23 @@ public class ResourceService {
 			resourceUpdated.setName(resource.getName());
 			resourceUpdated.setDetail(resource.getDetail());
 			resourceUpdated.setSharedCapacity(resource.getSharedCapacity());
-			resourceUpdated.setResourceType(getRsrcByName(resource
-					.getResourceType().getName())
+			resourceUpdated.setResourceType(rsrcTypes.findById(resource
+					.getResourceType().getId())
 					.orElse(newType(resource.getResourceType())));
+			return resources.save(resourceUpdated);
 		}
 		return newResource(resource);
+	}
+	public Optional<Resource> updateResourceStatus(Long id, ResourceStatus status) {
+		if (resources.existsById(id)) {
+			Resource resourceUpdated = resources.findById(id).get();
+			resourceUpdated.setStatus(status);
+			return Optional.of(resources.save(resourceUpdated));
+		}
+		return Optional.empty();
+	}
+	
+	public void deleteResource(Long id) {
+		resources.deleteById(id);
 	}
 }
