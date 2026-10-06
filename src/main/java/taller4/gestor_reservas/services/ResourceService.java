@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import taller4.gestor_reservas.models.Resource;
 import taller4.gestor_reservas.models.ResourceStatus;
 import taller4.gestor_reservas.models.ResourceType;
@@ -14,7 +15,7 @@ import taller4.gestor_reservas.repositories.ResourceRepository;
 import taller4.gestor_reservas.repositories.ResourceTypeRepository;
 
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor @Slf4j
 public class ResourceService {
 	private final ResourceRepository resources;
 	private final ResourceTypeRepository rsrcTypes;
@@ -22,15 +23,17 @@ public class ResourceService {
 	/*
 	 * RESOURCE'S TYPE SERVICES.
 	 */
-	public List<ResourceType> getAllTypes() {
+	public List<ResourceType> findAllTypes() {
 		return rsrcTypes.findAll();
 	}
-	public Optional<ResourceType> getTypeById(Long id) {
+	public Optional<ResourceType> findTypeById(Long id) {
 		return rsrcTypes.findById(id);
 	}
 	
-	public ResourceType newType(ResourceType type) {
+	public ResourceType createCategory(ResourceType type) {
+		log.info("CREACION DE CATEGORIA.");
 		if (rsrcTypes.existsByName(type.getName())) {
+			log.info("CATEGORIA YA EXISTENTE.");
 			return rsrcTypes.findByName(type.getName()).getFirst();
 		}
 		ResourceType newType = new ResourceType();
@@ -39,73 +42,81 @@ public class ResourceService {
 	}
 	
 	public ResourceType updateType(Long id, ResourceType type) {
+		log.info("MODIFICACION DE CATEGORIA.");
 		if (rsrcTypes.existsById(id) && !rsrcTypes.existsByName(type.getName())) {
 			ResourceType typeUpdated = rsrcTypes.findById(id).get();
 			typeUpdated.setName(type.getName());
 			rsrcTypes.save(typeUpdated);
 		}
-		return newType(type);
+		log.error("ERROR. EXISTE UNA CATEGORIA IGUAL O EL ID NO EXISTE.");
+		return createCategory(type);
 	}
 	
 	/*
 	 * RESOURCE SERVICES.
 	 */
-	public List<Resource> getAllResources() {
+	public List<Resource> findAll() {
 		return resources.findAll();
 	}
-	public Optional<Resource> getResourceById(Long id) {
+	public Optional<Resource> findResourceById(Long id) {
 		return resources.findById(id);
 	}
-	public List<Resource> getResourcesByType(Long typeId) {
+	public List<Resource> findResourcesByType(Long typeId) {
 		if (rsrcTypes.existsById(typeId)) {
-			return resources.findByResourceType(rsrcTypes.findById(typeId).get());
+			return resources.findByCategory(rsrcTypes.findById(typeId).get());
 		}
 		return new LinkedList<Resource>();
 	}
-	public List<Resource> getResourcesByStatus(ResourceStatus status) {
+	public List<Resource> findResourcesByStatus(ResourceStatus status) {
 		return resources.findByStatus(status);
 	}
 	
-	public List<Resource> getResourcesByStatusAndType(ResourceStatus status, Long typeId) {
+	public List<Resource> findResourcesByStatusAndType(ResourceStatus status, Long typeId) {
 		if (rsrcTypes.existsById(typeId)) {
-			return resources.findByStatusAndResourceType(status, rsrcTypes.findById(typeId).get());
+			return resources.findByStatusAndCategory(status, rsrcTypes.findById(typeId).get());
 		}
 		return new LinkedList<Resource>();
 	}
 	
-	public Resource newResource(Resource resource) {
+	public Resource createResource(Resource resource) {
+		log.info("CREACION DE RECURSO.");
 		Resource newResource = new Resource();
 		newResource.setName(resource.getName());
 		newResource.setDetail(resource.getDetail());
-		newResource.setSharedCapacity(resource.getSharedCapacity());
-		newResource.setResourceType(newType(resource.getResourceType()));
+//		newResource.setSharedCapacity(resource.getSharedCapacity());
+		newResource.setCategory(createCategory(resource.getCategory()));
 		newResource.setStatus(ResourceStatus.OUT_OF_SERVICE);
 		return resources.save(newResource);
 	}
 	
 	public Resource upateResource(Long id, Resource resource) {
+		log.info("MODIFICACION DE RECURSO.");
 		if (resources.existsById(id)) {
 			Resource resourceUpdated = resources.findById(id).get();
 			resourceUpdated.setName(resource.getName());
 			resourceUpdated.setDetail(resource.getDetail());
-			resourceUpdated.setSharedCapacity(resource.getSharedCapacity());
-			resourceUpdated.setResourceType(rsrcTypes.findById(resource
-					.getResourceType().getId())
-					.orElse(newType(resource.getResourceType())));
+//			resourceUpdated.setSharedCapacity(resource.getSharedCapacity());
+			resourceUpdated.setCategory(rsrcTypes.findById(resource
+					.getCategory().getId())
+					.orElse(createCategory(resource.getCategory())));
 			return resources.save(resourceUpdated);
 		}
-		return newResource(resource);
+		log.error("ERROR. NO EXISTE RECURSO CON ESE ID.");
+		return createResource(resource);
 	}
 	public Optional<Resource> updateResourceStatus(Long id, ResourceStatus status) {
+		log.info("MODIFICACION DE STATUS DE RECURSO.");
 		if (resources.existsById(id)) {
 			Resource resourceUpdated = resources.findById(id).get();
 			resourceUpdated.setStatus(status);
 			return Optional.of(resources.save(resourceUpdated));
 		}
+		log.error("ERROR. NO EXISTE RECURSO CON ESE ID.");
 		return Optional.empty();
 	}
 	
 	public void deleteResource(Long id) {
+		log.info("ELIMINACION DE RECURSO.");
 		resources.deleteById(id);
 	}
 }

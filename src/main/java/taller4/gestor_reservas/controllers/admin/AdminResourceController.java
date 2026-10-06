@@ -30,20 +30,20 @@ public class AdminResourceController {
 	 */
 	@GetMapping
 	public List<Resource> getAll() {
-		return resources.getAllResources();
+		return resources.findAll();
 	}
 	@GetMapping("/")
 	public List<Resource> getResourcesByStatus(@RequestParam ResourceStatus status) {
-		return resources.getResourcesByStatus(status);
+		return resources.findResourcesByStatus(status);
 	}
 	@GetMapping("/filter")
 	public List<Resource> getResourcesByType(@RequestParam Long typeId) {
-		return resources.getResourcesByType(typeId);
+		return resources.findResourcesByType(typeId);
 	}
 	
 	@PostMapping
 	public Resource postResource(@RequestBody Resource rsrc) {
-		return resources.newResource(rsrc);
+		return resources.createResource(rsrc);
 	}
 	
 	@PutMapping("/{id}")
@@ -65,7 +65,7 @@ public class AdminResourceController {
 	 */
 	@GetMapping("/categories")
 	public List<ResourceType> getAllResourceTypes() {
-		return resources.getAllTypes();
+		return resources.findAllTypes();
 	}
 	
 	@PutMapping("/categories/{id}")

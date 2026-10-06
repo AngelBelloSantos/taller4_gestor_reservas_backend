@@ -24,11 +24,11 @@ public class ResourceController {
 	 */
 	@GetMapping
 	public List<Resource> getAllOperationals() {
-		return resources.getResourcesByStatus(ResourceStatus.OPERATIONAL);
+		return resources.findResourcesByStatus(ResourceStatus.OPERATIONAL);
 	}
 	@GetMapping("/filter")
 	public List<Resource> getAll(@RequestParam Long typeId) {
-		return resources.getResourcesByStatusAndType(ResourceStatus.OPERATIONAL, typeId);
+		return resources.findResourcesByStatusAndType(ResourceStatus.OPERATIONAL, typeId);
 	}
 	
 	/*
@@ -36,6 +36,6 @@ public class ResourceController {
 	 */
 	@GetMapping("/categories")
 	public List<ResourceType> getAllCategories() {
-		return resources.getAllTypes();
+		return resources.findAllTypes();
 	}
 }

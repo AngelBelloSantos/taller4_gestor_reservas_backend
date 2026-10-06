@@ -1,5 +1,6 @@
-package taller4.gestor_reservas.controllers.users;
+package taller4.gestor_reservas.controllers.admin;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,10 +18,14 @@ import taller4.gestor_reservas.services.UserService;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/users")
-public class UserController {
+@RequestMapping("/api/admin/users")
+public class AdminUserController {
 	private final UserService users;
 	
+	@GetMapping
+	public List<User> getAllUsers() {
+		return users.findAll();
+	}
 	@GetMapping("/{id}")
 	public Optional<User> getUserById(@PathVariable Long id) {
 		return users.findUserById(id);

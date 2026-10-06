@@ -2,6 +2,8 @@ package taller4.gestor_reservas.models;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -17,11 +19,12 @@ public class Resource {
 	private Long id;
 	private String name;
 	private String detail;
-	private Integer sharedCapacity;
+//	private Integer sharedCapacity;
 	@ManyToOne(cascade = CascadeType.ALL)
-	private ResourceType resourceType;
+	private ResourceType category;
 //	@ManyToOne
 //	private List<Resource> resources = new LinkedList<Resource>();
+	@Enumerated(EnumType.STRING)
 	private ResourceStatus status;
 	
 //	public void addResources(Resource resource) {

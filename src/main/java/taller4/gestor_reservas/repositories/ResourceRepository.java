@@ -12,7 +12,7 @@ import taller4.gestor_reservas.models.ResourceType;
 @Repository
 public interface ResourceRepository extends JpaRepository<Resource, Long> {
 
-	public List<Resource> findByResourceType(ResourceType category);
+	public List<Resource> findByCategory(ResourceType category);
 	public List<Resource> findByStatus(ResourceStatus status);
-	public List<Resource> findByStatusAndResourceType(ResourceStatus status, ResourceType category);
+	public List<Resource> findByStatusAndCategory(ResourceStatus status, ResourceType category);
 }
