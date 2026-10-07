@@ -1,4 +1,4 @@
-package taller4.gestor_reservas.controllers.admin;
+package taller4.gestor_reservas.controllers;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,15 +20,15 @@ import taller4.gestor_reservas.models.ResourceType;
 import taller4.gestor_reservas.services.ResourceService;
 
 @RestController
-@RequestMapping("/api/admin/resources")
+@RequestMapping("/api/resources")
 @RequiredArgsConstructor
-public class AdminResourceController {
+public class ResourceController {
 	private final ResourceService resources;
 	
 	/*
 	 * RESOURCES API
 	 */
-	@GetMapping
+	@GetMapping("/admin")
 	public List<Resource> getAll() {
 		return resources.findAll();
 	}
@@ -36,9 +36,18 @@ public class AdminResourceController {
 	public List<Resource> getResourcesByStatus(@RequestParam ResourceStatus status) {
 		return resources.findResourcesByStatus(status);
 	}
-	@GetMapping("/filter")
+	@GetMapping("/admin/filter")
 	public List<Resource> getResourcesByType(@RequestParam Long typeId) {
 		return resources.findResourcesByType(typeId);
+	}
+	
+	@GetMapping
+	public List<Resource> getAllOperationals() {
+		return resources.findResourcesByStatus(ResourceStatus.OPERATIONAL);
+	}
+	@GetMapping("/filter")
+	public List<Resource> getAll(@RequestParam Long typeId) {
+		return resources.findResourcesByStatusAndType(ResourceStatus.OPERATIONAL, typeId);
 	}
 	
 	@PostMapping
@@ -64,7 +73,7 @@ public class AdminResourceController {
 	 * RESOURCE'S TYPES API
 	 */
 	@GetMapping("/categories")
-	public List<ResourceType> getAllResourceTypes() {
+	public List<ResourceType> getAllCategories() {
 		return resources.findAllTypes();
 	}
 	

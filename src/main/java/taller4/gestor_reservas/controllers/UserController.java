@@ -1,4 +1,4 @@
-package taller4.gestor_reservas.controllers.admin;
+package taller4.gestor_reservas.controllers;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,8 +18,8 @@ import taller4.gestor_reservas.services.UserService;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/admin/users")
-public class AdminUserController {
+@RequestMapping("/api/users")
+public class UserController {
 	private final UserService users;
 	
 	@GetMapping

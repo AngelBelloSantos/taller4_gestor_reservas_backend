@@ -1,4 +1,4 @@
-package taller4.gestor_reservas.controllers.users;
+package taller4.gestor_reservas.controllers;
 
 import java.util.List;
 import java.util.Optional;
