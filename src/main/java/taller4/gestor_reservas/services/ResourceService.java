@@ -31,9 +31,9 @@ public class ResourceService {
 	}
 	
 	public ResourceType createCategory(ResourceType type) {
-		log.info("CREACION DE CATEGORIA.");
+		log.info("Creando Categoría.");
 		if (rsrcTypes.existsByName(type.getName())) {
-			log.info("CATEGORIA YA EXISTENTE.");
+			log.info("La Categoría ya existe.");
 			return rsrcTypes.findByName(type.getName()).getFirst();
 		}
 		ResourceType newType = new ResourceType();
@@ -42,13 +42,13 @@ public class ResourceService {
 	}
 	
 	public ResourceType updateType(Long id, ResourceType type) {
-		log.info("MODIFICACION DE CATEGORIA.");
+		log.info("Modificando Categoría.");
 		if (rsrcTypes.existsById(id) && !rsrcTypes.existsByName(type.getName())) {
 			ResourceType typeUpdated = rsrcTypes.findById(id).get();
 			typeUpdated.setName(type.getName());
 			rsrcTypes.save(typeUpdated);
 		}
-		log.error("ERROR. EXISTE UNA CATEGORIA IGUAL O EL ID NO EXISTE.");
+		log.error("La Categoría NO pudo ser modificada.");
 		return createCategory(type);
 	}
 	
@@ -79,7 +79,7 @@ public class ResourceService {
 	}
 	
 	public Resource createResource(Resource resource) {
-		log.info("CREACION DE RECURSO.");
+		log.info("Creando Recurso.");
 		Resource newResource = new Resource();
 		newResource.setName(resource.getName());
 		newResource.setDetail(resource.getDetail());
@@ -90,7 +90,7 @@ public class ResourceService {
 	}
 	
 	public Resource upateResource(Long id, Resource resource) {
-		log.info("MODIFICACION DE RECURSO.");
+		log.info("Modificando Recurso.");
 		if (resources.existsById(id)) {
 			Resource resourceUpdated = resources.findById(id).get();
 			resourceUpdated.setName(resource.getName());
@@ -101,22 +101,22 @@ public class ResourceService {
 					.orElse(createCategory(resource.getCategory())));
 			return resources.save(resourceUpdated);
 		}
-		log.error("ERROR. NO EXISTE RECURSO CON ESE ID.");
+		log.error("El Recurso NO se pudo modificar.");
 		return createResource(resource);
 	}
 	public Optional<Resource> updateResourceStatus(Long id, ResourceStatus status) {
-		log.info("MODIFICACION DE STATUS DE RECURSO.");
+		log.info("Modificando Status de Recurso.");
 		if (resources.existsById(id)) {
 			Resource resourceUpdated = resources.findById(id).get();
 			resourceUpdated.setStatus(status);
 			return Optional.of(resources.save(resourceUpdated));
 		}
-		log.error("ERROR. NO EXISTE RECURSO CON ESE ID.");
+		log.error("El Recurso NO pudo ser modificado.");
 		return Optional.empty();
 	}
 	
 	public void deleteResource(Long id) {
-		log.info("ELIMINACION DE RECURSO.");
+		log.info("Eliminando Recurso.");
 		resources.deleteById(id);
 	}
 }

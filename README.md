@@ -1,4 +1,4 @@
-Diagrama de Entidades.
+Entities Diagram.
 ```mermaid
 classDiagram
 direction TB
@@ -51,3 +51,25 @@ direction TB
     User "1" <-- "0..*" Reservation : makes
     Resource "1..*" <-- "0..*" Reservation : reserves
 ```
+
+User Case.
+```mermaid
+usecase-beta
+actor User("User")
+actor Admin("Admin")
+Login("Log in")
+ManageUsers("Manage users")
+ManageOwnUserProfile("Manage user's own profile")
+ManageResources("Manage resources")
+ViewAvailableResources("View available resources")
+ManageReservations("Manage reservations")
+ManageOwnReservations("Manage user's reservations")
+User --> Login
+User --> ManageOwnUserProfile
+User --> ViewAvailableResources
+User --> ManageOwnReservations
+Admin --> ManageUsers
+Admin --> ManageResources
+Admin --> ManageReservations
+```
+

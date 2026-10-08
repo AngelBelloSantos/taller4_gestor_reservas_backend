@@ -24,7 +24,7 @@ public class UserService {
 	}
 	
 	public User createUser(User user) {
-		log.info("CREACION DE USUARIO.");
+		log.info("Creando Usuario.");
 		User newUser = new User();
 		newUser.setName(user.getName());
 		newUser.setIdentificationNumber(user.getIdentificationNumber());
@@ -37,7 +37,7 @@ public class UserService {
 	}
 	
 	public User updateUser(Long id, User user) {
-		log.info("MODIFICACION DE USUARIO.");
+		log.info("Modificando Usuario.");
 		if (users.existsById(id)) {
 			User userUpdated = findUserById(id).get();
 			userUpdated.setName(user.getName());
@@ -46,21 +46,21 @@ public class UserService {
 			userUpdated.setPhoneNumber(user.getPhoneNumber());
 			return users.save(userUpdated);
 		}
-		log.error("ERROR. EL ID NO ES VALIDO.");
+		log.error("El Usuario NO se pudo modificar.");
 		return createUser(user);
 	}
 	public Optional<User> updatePassword(Long id, User user) {
-		log.info("MODIFICACION DE CONTRASEÑA.");
+		log.info("Modificando Contraseña de Usuario.");
 		if (users.existsById(id)) {
 			User userUpdated = findUserById(id).get();
 			userUpdated.setPassword(user.getPassword());
 			users.save(userUpdated);
 		}
-		log.error("EL USUARIO NO EXISTE.");
+		log.error("El Usuario NO existe.");
 		return Optional.empty();
 	}
 	public Optional<User> setUserRole(Long id, User user) {
-		log.info("MODIFICACION DE ROL.");
+		log.info("Modificando Rol de Usuario.");
 		boolean validRole = false;
 		for (UserRole role : UserRole.values()) {
 			if (role.compareTo(user.getRole()) == 0) validRole = true;
@@ -70,12 +70,12 @@ public class UserService {
 			userUpdated.setRole(user.getRole());
 			return Optional.of(users.save(userUpdated));
 		}
-		log.error("ERROR. EL USUARIO NO EXISTE O EL NUEVO ROL ES INVALIDO.");
+		log.error("El Rol NO se pudo modificar.");
 		return Optional.empty();
 	}
 	
 	public void deleteUserById(Long id) {
-		log.info("ELIMINACION DE USUARIO.");
+		log.info("Eliminando Usuario.");
 		users.deleteById(id);
 	}
 }

@@ -30,63 +30,53 @@ public class ReservationService {
 	}
 	
 	public Reservation createReservation(Reservation reservation) {
-		log.info("CREACION DE RESERVA.");
+		log.info("Creando Reserva.");
 		if (reservation.getStartDate().isBefore(LocalDateTime.now())) {
-			log.error("ERROR. LA FECHA DE INICIO YA PASÓ.");
+			log.error("La fecha de Inicio de la Reserva es anterior a la actual.");
 			return null; // ERROR. La fecha de inicio de la reserva ya pasó... 
 		}
 		if (
 				reservation.getStartDate().isAfter(reservation.getEndDate()) 
 				|| reservation.getStartDate().isEqual(reservation.getEndDate())) {
-			log.error("ERROR. LA FECHA DE INICIO ES POSTERIOR A LA DE FINALIZACION.");
+			log.error("La fecha de Inicio de la Reserva es posterior a la de Finalización.");
 			return null; // ERROR. La fecha de inicio es posterior al de finalización.
 		}
 		
 		Optional<User> user = users.findUserById(reservation.getUser().getId());
 		if (user.isEmpty()) {
-			log.error("ERROR. EL USUARIO NO EXISTE.");
+			log.error("El Usuario NO existe.");
 			return null;
 		}
 		
 		Optional<Resource> resource = resources.findResourceById(reservation.getResource().getId());
 		if (resource.isEmpty()) {
-			log.error("ERROR. EL RECURSO QUE SE QUIERE RESERVAR NO EXISTE.");
+			log.error("El Recurso que se desea reservar NO existe.");
 			return null; // ERROR. El recurso que se quiere reservar no existe.
 		}
 		if (!resource.get().getStatus().equals(ResourceStatus.OPERATIONAL)) {
-			log.error("ERROR. EL RECURSO NO ESTA DISPONIBLE.");
+			log.error("El Recurso NO está disponible.");
 			return null; // ERROR. El recurso no está Operativo (OUT OF SERVICE | RETIRED)
 		}
 		
-		List<Reservation> reservationList = reservations.findByStatusAndResourceIdAndStartDateLessThanAndEndDateGreaterThan(
+		List<Reservation> reservationList = findReservationsByStatusAndResourceAndTimeRange(
 				ReservationStatus.CONFIRMED, 
-				resource.get().getId(), 
-				reservation.getEndDate(), 
-				reservation.getStartDate());
+				resource.get().getId(),
+				reservation.getStartDate(),
+				reservation.getEndDate());
 		
 		// Check Resource availability.
 		if (!reservationList.isEmpty()) {
-			log.error("ERROR. EL RECURSO ESTA RESERVADO DENTRO DE ESE LAPSO DE TIEMPO.");
+			log.error("El Recurso está reservado dentro de ese rango de tiempo.");
 			return null; // ERROR. El recurso está reservado dentro de ese lapso de tiempo.
 		}
 		
 		Reservation newReservation = new Reservation();
 		newReservation.setReservationDate(LocalDateTime.now());
 		newReservation.setStartDate(reservation.getStartDate());
-//		newReservation.setStartDate(LocalDateTime.of(
-//				reservation.getStartDate().getYear(),
-//				reservation.getStartDate().getMonth(),
-//				reservation.getStartDate().getDayOfMonth(),
-//				reservation.getStartDate().getHour(), 0));
 		newReservation.setEndDate(reservation.getEndDate());
-//		newReservation.setEndDate(LocalDateTime.of(
-//				reservation.getEndDate().getYear(),
-//				reservation.getEndDate().getMonth(),
-//				reservation.getEndDate().getDayOfMonth(),
-//				reservation.getEndDate().getHour(), 0));
 		newReservation.setUser(user.get());
 		newReservation.setResource(resource.get());
-		newReservation.setStatus(ReservationStatus.CONFIRMED);
+//		newReservation.setStatus(ReservationStatus.CONFIRMED);
 		
 		return reservations.save(newReservation);
 	}
@@ -97,18 +87,41 @@ public class ReservationService {
 	}
 	
 	public Reservation updateStatus(Long id, ReservationStatus status) {
-		log.info("MODIFICACION DE STATUS DE RESERVA.");
+		log.info("Modificando Status de Reserva.");
 		Optional<Reservation> reservation = reservations.findById(id);
 		if (reservation.isEmpty()) {
-			log.error("ERROR. NO EXISTE LA RESERVA.");
+			log.error("La Reserva NO existe.");
 			return null;
 		}
-		reservation.get().setStatus(status);
-		return reservations.save(reservation.get());
+		switch (status) {
+		case PENDING: {
+			return null;
+		}
+		case CONFIRMED: {
+			List<Reservation> reservationList = findReservationsByStatusAndResourceAndTimeRange(
+					ReservationStatus.CONFIRMED,
+					reservation.get().getResource().getId(),
+					reservation.get().getStartDate(),
+					reservation.get().getEndDate());
+			if (reservationList.isEmpty()) {
+				reservation.get().accept();
+				return reservations.save(reservation.get());
+			}
+			return null;
+		}
+		case CANCELLED: {
+			reservation.get().cancel();
+			return reservations.save(reservation.get());
+		}
+		default: {
+			log.info("Status NO definido");
+			return null;
+		}
+		}
 	}
 	
 	public void deleteReservation(Long id) {
-		log.info("ELIMINACION DE RESERVA.");
+		log.info("Eliminando Reserva.");
 		reservations.deleteById(id);
 	}
 }
