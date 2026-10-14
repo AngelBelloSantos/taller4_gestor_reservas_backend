@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import taller4.gestor_reservas.models.Reservation;
-import taller4.gestor_reservas.models.ReservationStatus;
 import taller4.gestor_reservas.services.ReservationService;
 
 @RestController
@@ -41,9 +40,9 @@ public class ReservationController {
 		return reservations.createReservation(reservation);
 	}
 	
-	@PutMapping("/status/{id}")
-	public Reservation putReservationStatus(@PathVariable Long id, @RequestBody ReservationStatus status) {
-		return reservations.updateStatus(id, status);
+	@PutMapping("/{id}")
+	public Optional<Reservation> putReservationStatus(@PathVariable Long id, @RequestBody Reservation reservation) {
+		return reservations.updateReservation(id, reservation);
 	}
 	
 	@DeleteMapping("/{id}")
